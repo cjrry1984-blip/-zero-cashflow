@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cjrry1984-blip.github.io/-zero-cashflow/sitemap.xml
