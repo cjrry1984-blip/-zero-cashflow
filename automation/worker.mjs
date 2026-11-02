@@ -31,7 +31,27 @@ async function readBody(request) {
  const bytes=new Uint8Array(size);let offset=0;for(const c of chunks){bytes.set(c,offset);offset+=c.length;}
  return JSON.parse(new TextDecoder().decode(bytes));
 }
-export default {async fetch(request,env) {
+export async function buildReport(env,now) {
+ // Previous full UTC day, so delayed Actions starts give the same period.
+ const end=Math.floor(now/86400)*86400, start=end-86400;
+ const totals=await env.DB.prepare(`SELECT currency,type,COUNT(*) AS events,SUM(amount) AS amount_minor
+ FROM events WHERE occurred>=? AND occurred<? GROUP BY currency,type ORDER BY currency,type`).bind(start,end).all();
+ const due=await env.DB.prepare(`SELECT COUNT(*) AS count FROM events p WHERE p.type='paid'
+ AND p.followup_done=0 AND p.opted_out=0 AND p.email IS NOT NULL AND p.occurred<=?
+ AND NOT EXISTS(SELECT 1 FROM events r WHERE r.transaction_id=p.transaction_id AND r.type='refunded')`).bind(now-3*86400).first();
+ const last=await env.DB.prepare('SELECT MAX(received) AS last_received FROM events').first();
+ return {period_start:new Date(start*1000).toISOString(),period_end:new Date(end*1000).toISOString(),
+ basis:'whole transactions containing Q6StN; amounts in minor units; currencies separate; webhook observations, not reconciled sales',
+ totals:totals.results,followups_due:due.count,last_received:last.last_received,
+ warning:'No events does not prove zero sales. Check Payhip dashboard and webhook configuration. Refund duplicates use id/date/amount; reconcile ambiguous partial refunds manually.'};
+}
+export default {
+ async scheduled(event,env) {
+  const report=await buildReport(env,Math.floor(event.scheduledTime/1000));
+  await env.DB.prepare('INSERT INTO daily_reports (period_start,generated_at,report_json) VALUES (?,?,?) ON CONFLICT(period_start) DO UPDATE SET generated_at=excluded.generated_at,report_json=excluded.report_json')
+   .bind(report.period_start,Math.floor(Date.now()/1000),JSON.stringify(report)).run();
+ },
+ async fetch(request,env) {
  const url=new URL(request.url), now=Math.floor(Date.now()/1000);
  try {
  if(url.pathname==='/health' && request.method==='GET') {
@@ -53,18 +73,7 @@ export default {async fetch(request,env) {
  const secret=url.pathname==='/report'?env.REPORT_TOKEN:env.ADMIN_TOKEN;
  if(!secret || !equal(request.headers.get('authorization'),`Bearer ${secret}`))return json({error:'Unauthorized'},401);
  if(url.pathname==='/report' && request.method==='GET') {
- // Previous full UTC day, so delayed Actions starts give the same period.
- const end=Math.floor(now/86400)*86400, start=end-86400;
- const totals=await env.DB.prepare(`SELECT currency,type,COUNT(*) AS events,SUM(amount) AS amount_minor
- FROM events WHERE occurred>=? AND occurred<? GROUP BY currency,type ORDER BY currency,type`).bind(start,end).all();
- const due=await env.DB.prepare(`SELECT COUNT(*) AS count FROM events p WHERE p.type='paid'
- AND p.followup_done=0 AND p.opted_out=0 AND p.email IS NOT NULL AND p.occurred<=?
- AND NOT EXISTS(SELECT 1 FROM events r WHERE r.transaction_id=p.transaction_id AND r.type='refunded')`).bind(now-3*86400).first();
- const last=await env.DB.prepare('SELECT MAX(received) AS last_received FROM events').first();
- return json({period_start:new Date(start*1000).toISOString(),period_end:new Date(end*1000).toISOString(),
- basis:'whole transactions containing Q6StN; amounts in minor units; currencies separate; webhook observations, not reconciled sales',
- totals:totals.results,followups_due:due.count,last_received:last.last_received,
- warning:'No events does not prove zero sales. Check Payhip dashboard and webhook configuration. Refund duplicates use id/date/amount; reconcile ambiguous partial refunds manually.'});
+ return json(await buildReport(env,now));
  }
  if(url.pathname==='/followups' && request.method==='GET') {
  const rows=await env.DB.prepare(`SELECT p.event_key,p.email,p.occurred FROM events p WHERE p.type='paid'

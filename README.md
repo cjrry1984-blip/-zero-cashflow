@@ -47,4 +47,4 @@ Run `python scripts/validate_data.py` to validate both the tool directory and re
 
 ## Izzopac Payhip sales automation
 
-The static storefront already links to https://payhip.com/b/Q6StN. A separate, optional Worker/D1 backend now provides sale/refund registration, protected follow-up drafts and daily aggregate GitHub Actions reports. See [activation steps and verification limits](automation/README.md). It is built and locally tested; live Payhip delivery and real sales have not been verified. No buyer data or secrets belong in this repository.
+The static storefront already links to https://payhip.com/b/Q6StN. A deployed Worker/D1 backend provides sale/refund registration, protected follow-up drafts and private daily reports in Cloudflare D1. Public GitHub report publication has been removed. See [activation steps and verification limits](automation/README.md). The live database health check and scheduled report handler have been verified; real Payhip sale delivery and the first automatic timer execution remain unverified. No buyer data or secrets belong in this repository.

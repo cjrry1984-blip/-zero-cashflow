@@ -1,33 +1,45 @@
 # Izzopac Payhip automation — setup and verified status
 
-## Status on 2026-11-02
+## Live status on 2026-11-02
 
-Repository baseline: `c48412a` on `main`. It had a static site and data-validation CI; no sale receiver, database, follow-up queue or daily sales report. The product page already links to https://payhip.com/b/Q6StN and displays $17.99. The live Payhip page could not be independently rechecked: both browsing and direct HTTP access were blocked. The checkout, ZIP contents, delivery and any real sales remain unverified.
+The receiver is deployed at https://izzopac-payhip.cjrry1984.workers.dev. Cloudflare Workers/D1 Free are configured, with the D1 database restricted to EU jurisdiction. Four credentials are stored as encrypted Cloudflare secrets. Request logging is disabled. Payhip confirmed saving the receiver URL, with `paid` and `refunded` enabled. The secret-bearing URL is intentionally not documented here.
 
-Implemented: Cloudflare Worker receiver, D1 schema, database-backed idempotency, product filter, refund recording, protected follow-up drafts, separate aggregate reporting token, daily GitHub Actions summary and automated tests. No customer messages are sent by this code. No paid services, analytics SDKs or email providers are required.
+The public product page was independently checked from the signed-in browser: Solo Service Business Follow-Up Kit, US$17.99, ZIP listed as 10 KB. Checkout and download delivery remain untested. No purchase or synthetic sale was made.
 
-Local verification: Node 24 tests run the actual receiver against real in-memory SQLite through a D1-compatible test adapter. They cover authentication, invalid/oversized input, retry deduplication, product filtering, opt-out, follow-up completion, refund-before-payment, currency separation, privacy and storage failures. Existing directory validation and weekly draft generation also pass. This is not a Cloudflare deployment or a Payhip sale test.
+`/health` was verified live with HTTP 200 and `status: ready`, using a real D1 read. The Cloudflare scheduled handler was manually triggered in its runtime, and a private report was read back from the actual D1 `daily_reports` table. The first automatic timer run is scheduled for 2026-11-03 at 07:17 UTC (08:17 Brussels winter). A future timer execution has not yet been observed. The initial public route served stale Hello World code until the correct deployed version was explicitly activated; the final health check returned the receiver JSON.
 
-## One-time activation
+Five local tests pass against real in-memory SQLite through a D1-compatible adapter: authentication/input validation, deduplication/product filtering/follow-ups/refunds, private aggregate reporting, storage errors and scheduled persistence. These are synthetic local tests, not sales.
 
-Use Cloudflare **Workers Free** and D1 Free. No custom domain is needed. Stay on Free: quota exhaustion can interrupt receipt; do not upgrade billing automatically. GitHub Actions in this public repository is suitable for the small daily report. Scheduled Actions can be delayed and may be disabled after repository inactivity; check runs regularly. No GitHub Action can act as an always-on webhook server.
+## Private daily report and follow-ups
+
+**The owner requested private reporting. The public GitHub report workflow has been removed.** Cloudflare cron generates a report daily at 07:17 UTC and upserts it into `daily_reports`, even when there are no received events. It requires no GitHub token, computer left running or email provider. Email delivery is not configured.
+
+Open the [private Cloudflare database](https://dash.cloudflare.com/570e20070f142f317ef65a38bedf4f9f/workers/d1/databases/d0deaec1-d95f-4158-a8c1-7ffd4fd60844/metrics), choose Explore Data and select `daily_reports`. You must be signed into your Cloudflare account. `report_json` contains the period, totals by currency and event type, due follow-up count and last received event time. To see due support drafts, query the private `followups_due` view in Console: `SELECT * FROM followups_due ORDER BY purchased_utc LIMIT 100;`. Review and send messages yourself. Mark one complete in Console with `UPDATE events SET followup_done=1 WHERE event_key='paid:TRANSACTION_ID';`, replacing the ID with the selected row. No buyer messages are sent automatically.
+
+There is no setup left for the receiver or private timer. Real Payhip sale/refund delivery and protected product download still require an actual controlled transaction or a future genuine sale to verify. If `/health` stops returning ready or Payhip shows sales missing from D1, reconcile promptly; do not infer zero sales from an empty report.
+
+The steps below are retained for recovery or a new account. **Keep reports in the private D1 database.**
+
+## Recovery / new installation
+
+Use Cloudflare **Workers Free** and D1 Free. No custom domain is needed. Stay on Free: quota exhaustion can interrupt receipt; do not upgrade billing automatically. GitHub Actions only runs code tests. Cloudflare runs the private report timer. No GitHub Action acts as an always-on webhook server.
 
 From `automation/`, using Node 24:
 
-1. Sign into your own Cloudflare account: `npx wrangler@4 login`. Create D1: `npx wrangler@4 d1 create izzopac-sales`. Copy `wrangler.example.toml` to `wrangler.toml` and replace the database ID with the returned ID. This local config is ignored by Git.
-2. Apply the schema: `npx wrangler@4 d1 migrations apply izzopac-sales --remote`. Set four secrets using the hidden input prompts below. Use separate random values of at least 32 bytes for the three tokens; a password manager can generate them. Never paste them in a commit, issue, chat, shell argument or screenshot.
+1. Sign into your own Cloudflare account: `npx wrangler@4.156.2 login`. Create D1: `npx wrangler@4.156.2 d1 create izzopac-sales --jurisdiction eu`. Copy `wrangler.example.toml` to `wrangler.toml` and replace the database ID with the returned ID. This local config is ignored by Git.
+2. Apply the schema: `npx wrangler@4.156.2 d1 migrations apply izzopac-sales --remote`. Set four secrets using the hidden input prompts below. Use separate random values of at least 32 bytes for the three tokens; a password manager can generate them. Never paste them in a commit, issue, chat, shell argument or screenshot.
 
    ```text
-   npx wrangler@4 secret put PAYHIP_API_KEY
-   npx wrangler@4 secret put WEBHOOK_TOKEN
-   npx wrangler@4 secret put REPORT_TOKEN
-   npx wrangler@4 secret put ADMIN_TOKEN
-   npx wrangler@4 deploy
+   npx wrangler@4.156.2 secret put PAYHIP_API_KEY
+   npx wrangler@4.156.2 secret put WEBHOOK_TOKEN
+   npx wrangler@4.156.2 secret put REPORT_TOKEN
+   npx wrangler@4.156.2 secret put ADMIN_TOKEN
+   npx wrangler@4.156.2 deploy
    ```
 
    PAYHIP_API_KEY is from Payhip Settings → Developer. The other tokens are independently generated secrets. If Wrangler requests an initial deploy before setting secrets, deploy first; the receiver fails closed until configured. Do not enable Worker request logs: the webhook URL contains a secret token.
 3. Check `https://<worker>.<account>.workers.dev/health`: expect HTTP 200 and `status: ready`. In Payhip Settings → Developer add `https://<worker>.<account>.workers.dev/webhook?token=<WEBHOOK_TOKEN>` and enable **paid** and **refunded**. Keep existing webhook endpoints. Treat this entire URL as secret. The Worker checks both the URL token and Payhip's documented `sha256(API key)` signature. Payhip's signature is a static credential, not a body HMAC, so knowledge of it allows forgery. HTTPS, the second token, no payload logging, and rotation matter.
-4. In GitHub Settings → Secrets and variables → Actions, add secret `PAYHIP_REPORT_TOKEN` with the same value as Cloudflare `REPORT_TOKEN`; add variable `PAYHIP_WORKER_URL` with the HTTPS workers.dev base URL. Daily reports include business totals and are **visible in this public repository's Actions summaries**. If that is acceptable, set variable `PAYHIP_REPORT_ENABLED` to `true`, then run **Daily Payhip report** manually. Otherwise leave it disabled and retrieve `/report` privately. It runs around **07:17 UTC** daily (08:17 Brussels winter / 09:17 summer); no email delivery is configured. Enable GitHub failure notifications in your own notification settings if wanted.
+4. The private scheduled handler is deployed with the Worker. Confirm the cron `17 7 * * *` in Cloudflare Settings → Trigger events. Open Explore Data → `daily_reports` after the first run. Do not add report credentials to GitHub or publish financial summaries there.
 
 No Cloudflare credentials are needed in GitHub. Deployment remains a manual command so this repository cannot spend money or change the receiver using a GitHub token.
 
@@ -42,7 +54,7 @@ Mark a reviewed item complete with `POST /followups/done`, the same admin header
 - Confirm `/health` succeeds and a webhook with the wrong token/signature is rejected (401).
 - Use a **separate test Worker/database and separate test credentials** for synthetic events. Do not inject synthetic sales into production. Replay a signed fixture twice; expect `recorded`, then `duplicate`, and one database row.
 - Verify the deployed Worker and D1 binding with a controlled Payhip test transaction only when you choose to make one. Check its Payhip transaction ID, one D1 `paid` row, next-day report, protected delivery and refund event if applicable. Do not treat a synthetic fixture as a sale.
-- Until that is done, the status is **built and locally tested; not live end-to-end verified**. No sales, revenue or working delivery are claimed.
+- Until that is done, the status is **deployed, health checked and private report tested; real Payhip transaction flow not end-to-end verified**. No sales, revenue or working delivery are claimed.
 
 ## Accounting and recovery limits
 

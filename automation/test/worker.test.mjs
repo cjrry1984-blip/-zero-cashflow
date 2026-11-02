@@ -54,3 +54,15 @@ test('storage failure returns retryable 503; health checks storage',async()=>{
  assert.equal((await worker.fetch(post(await payload()),env)).status,503);
  assert.equal((await worker.fetch(new Request('https://test/health'),env)).status,503);
 });
+
+test('private scheduled report is persisted once per day without customer data',async()=>{
+ const {env,db}=setup();
+ db.exec(readFileSync(new URL('../migrations/0002_private_reports.sql',import.meta.url),'utf8'));
+ await worker.fetch(post(await payload()),env);
+ const event={scheduledTime:Date.now()};
+ await worker.scheduled(event,env); await worker.scheduled(event,env);
+ const rows=db.prepare('SELECT * FROM daily_reports').all();
+ assert.equal(rows.length,1);
+ assert.ok(!rows[0].report_json.includes('test@example.com'));
+ assert.equal(JSON.parse(rows[0].report_json).followups_due,1);
+});
