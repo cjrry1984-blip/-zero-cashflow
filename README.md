@@ -40,3 +40,7 @@ Recipes live in `data/recipes.json`. Each recipe includes a task, difficulty, se
 
 ## Quality and safety
 Run `python scripts/validate_data.py` to validate both the tool directory and recipe data. Review provider pricing, terms, links, privacy and all instructions before publishing changes. Do not claim that an integration is live unless it has actually been connected and tested.
+
+
+## First digital product
+`product.html` is the sales page for the Solo Service Business Follow-Up Kit. The paid download bundle is prepared separately and must be uploaded to a payment platform with protected delivery. The website intentionally does not accept orders until a real checkout URL is configured and tested.
