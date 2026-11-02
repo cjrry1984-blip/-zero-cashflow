@@ -1,0 +1,10 @@
+[
+{"name":"ChatGPT","category":"Writing","description":"General-purpose AI assistant for drafting, analysis, learning, and brainstorming.","pricing":"Freemium","url":"https://chatgpt.com/","use_cases":["writing","research","productivity"]},
+{"name":"Claude","category":"Writing","description":"AI assistant for writing, analysis, and working with longer documents.","pricing":"Freemium","url":"https://claude.ai/","use_cases":["writing","analysis"]},
+{"name":"Google Gemini","category":"Research","description":"AI assistant from Google for questions, research, and multimodal tasks.","pricing":"Freemium","url":"https://gemini.google.com/","use_cases":["research","productivity"]},
+{"name":"Make","category":"Automation","description":"Visual platform for connecting apps and automating repeatable workflows.","pricing":"Freemium","url":"https://www.make.com/","use_cases":["automation","integrations"]},
+{"name":"n8n","category":"Automation","description":"Workflow automation platform with self-hosting options and extensible integrations.","pricing":"Freemium","url":"https://n8n.io/","use_cases":["automation","integrations"]},
+{"name":"Canva","category":"Marketing","description":"Design platform with AI-assisted tools for visual content and presentations.","pricing":"Freemium","url":"https://www.canva.com/","use_cases":["marketing","design"]},
+{"name":"Perplexity","category":"Research","description":"AI-powered answer and research engine with linked sources.","pricing":"Freemium","url":"https://www.perplexity.ai/","use_cases":["research","search"]},
+{"name":"GitHub Copilot","category":"Developer tools","description":"AI coding assistant integrated into supported development environments.","pricing":"Paid","url":"https://github.com/features/copilot","use_cases":["coding","developer productivity"]}
+]
