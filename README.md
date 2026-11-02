@@ -1,4 +1,4 @@
-# ZERO CASHFLOW 2.0
+# ZERO CASHFLOW 3.0
 
 A lightweight, English-language AI tools directory and content starter. It is designed to run without paid APIs, API keys, or a backend.
 
@@ -35,3 +35,8 @@ The data can be extended with legitimate affiliate URLs later. Do not claim a pa
 
 ## Privacy and security
 No analytics, cookies, forms, or API credentials are included. External provider links may collect data under their own policies. Review legal requirements before adding tracking, email collection, or monetization.
+## Automation recipes
+Recipes live in `data/recipes.json`. Each recipe includes a task, difficulty, setup time, tools, steps, a free-first route and a safety note. The manual versions are designed to be usable without API keys. The website supports search, category/difficulty filters, browser-local saved recipes and copying a checklist. Saved recipe IDs stay in the visitor's browser and are not sent to this site.
+
+## Quality and safety
+Run `python scripts/validate_data.py` to validate both the tool directory and recipe data. Review provider pricing, terms, links, privacy and all instructions before publishing changes. Do not claim that an integration is live unless it has actually been connected and tested.
