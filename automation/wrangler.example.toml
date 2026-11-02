@@ -1,0 +1,14 @@
+name = "izzopac-payhip"
+main = "worker.mjs"
+compatibility_date = "2026-11-01"
+workers_dev = true
+# Copy to wrangler.toml (ignored). Stay on Workers Free.
+[vars]
+PRODUCT_KEY = "Q6StN"
+[[d1_databases]]
+binding = "DB"
+database_name = "izzopac-sales"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+[observability]
+enabled = false

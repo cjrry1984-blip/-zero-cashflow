@@ -44,3 +44,7 @@ Run `python scripts/validate_data.py` to validate both the tool directory and re
 
 ## First digital product
 `product.html` is the sales page for the Solo Service Business Follow-Up Kit. The paid download bundle is prepared separately and must be uploaded to a payment platform with protected delivery. The website intentionally does not accept orders until a real checkout URL is configured and tested.
+
+## Izzopac Payhip sales automation
+
+The static storefront already links to https://payhip.com/b/Q6StN. A separate, optional Worker/D1 backend now provides sale/refund registration, protected follow-up drafts and daily aggregate GitHub Actions reports. See [activation steps and verification limits](automation/README.md). It is built and locally tested; live Payhip delivery and real sales have not been verified. No buyer data or secrets belong in this repository.
