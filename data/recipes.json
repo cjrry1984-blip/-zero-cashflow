@@ -1,0 +1,159 @@
+[
+  {
+    "id": "content-repurpose",
+    "title": "One idea into a week of content",
+    "category": "Marketing",
+    "level": "Beginner",
+    "time": "30–45 min setup",
+    "summary": "Turn one topic or source document into a draft outline, short posts and a review checklist.",
+    "tools": [
+      "ChatGPT",
+      "Canva"
+    ],
+    "tags": [
+      "content",
+      "writing",
+      "social media"
+    ],
+    "free_route": "Use the free tiers where available. Paste only material you own or are allowed to process; review every generated claim before publishing.",
+    "steps": [
+      "Choose one topic and define the audience and goal.",
+      "Ask an AI assistant for a structured outline based only on the source notes you provide.",
+      "Request three short post drafts in distinct formats; label them as drafts.",
+      "Create visuals in a design tool or use a simple text-only template.",
+      "Fact-check, edit for your own voice, check image rights and schedule manually."
+    ],
+    "safety": "Do not upload confidential client information. AI-generated claims and images need human review."
+  },
+  {
+    "id": "research-brief",
+    "title": "Build a research brief with sources",
+    "category": "Research",
+    "level": "Beginner",
+    "time": "20–40 min",
+    "summary": "Create a structured first-pass brief while keeping source links and separating facts from assumptions.",
+    "tools": [
+      "Perplexity",
+      "ChatGPT"
+    ],
+    "tags": [
+      "research",
+      "sources",
+      "brief"
+    ],
+    "free_route": "Start with public web sources and free access tiers. Verify important claims against the original source, not just an AI summary.",
+    "steps": [
+      "Write one focused research question and define what is in and out of scope.",
+      "Use a search or answer engine to find primary sources and credible references.",
+      "Open the original sources and record the exact URLs, dates and relevant passages.",
+      "Ask an AI assistant to organise your notes into themes, evidence and open questions.",
+      "Check each factual statement against its source and mark anything uncertain."
+    ],
+    "safety": "Never treat generated citations as verified. Do not use this workflow as the sole basis for legal, medical or financial decisions."
+  },
+  {
+    "id": "inbox-triage",
+    "title": "Sort incoming requests without auto-sending",
+    "category": "Productivity",
+    "level": "Intermediate",
+    "time": "45–90 min setup",
+    "summary": "Use a simple form or spreadsheet plus human review to categorise incoming requests before replying.",
+    "tools": [
+      "Google Sheets",
+      "ChatGPT",
+      "Make"
+    ],
+    "tags": [
+      "admin",
+      "email",
+      "triage"
+    ],
+    "free_route": "Begin with a manual spreadsheet and copy/paste classification. Add an automation platform only after the process is stable; free limits vary.",
+    "steps": [
+      "List the request categories and define what counts as urgent.",
+      "Create a spreadsheet with received date, category, owner, status and next action.",
+      "Remove personal or sensitive details before asking an AI assistant to classify sample requests.",
+      "Test the categories on a small batch and correct mistakes.",
+      "If automating later, route drafts to a human approval step; do not auto-send replies initially."
+    ],
+    "safety": "Minimise personal data. Do not send sensitive messages or make consequential decisions solely from AI classifications."
+  },
+  {
+    "id": "weekly-report",
+    "title": "Create a weekly progress report",
+    "category": "Productivity",
+    "level": "Beginner",
+    "time": "15–30 min per week",
+    "summary": "Turn your own task notes and metrics into a consistent weekly summary with decisions and next actions.",
+    "tools": [
+      "Google Sheets",
+      "ChatGPT"
+    ],
+    "tags": [
+      "reporting",
+      "planning",
+      "productivity"
+    ],
+    "free_route": "Keep a simple free spreadsheet and paste a cleaned summary into an AI assistant. No API key or integration is required.",
+    "steps": [
+      "Collect completed tasks, blockers, key numbers and next-week priorities in one place.",
+      "Remove confidential details and check that figures are accurate.",
+      "Ask an AI assistant to organise the notes into wins, risks, decisions and next actions.",
+      "Compare the draft against the source notes and correct omissions or invented details.",
+      "Share the report yourself and assign owners to each action."
+    ],
+    "safety": "Verify all numbers and names. Only share information with people authorised to see it."
+  },
+  {
+    "id": "no-code-lead-board",
+    "title": "Organise leads in a simple follow-up board",
+    "category": "Business",
+    "level": "Intermediate",
+    "time": "60–120 min setup",
+    "summary": "Track enquiries and follow-ups in a spreadsheet first, with optional no-code automation after testing.",
+    "tools": [
+      "Google Sheets",
+      "Make"
+    ],
+    "tags": [
+      "leads",
+      "sales",
+      "workflow"
+    ],
+    "free_route": "Start manually with a spreadsheet. If you later connect forms or email, check the provider's free limits and data-processing terms.",
+    "steps": [
+      "Define the minimum fields you need: source, date, status, next action and owner.",
+      "Create a small board with clear statuses such as New, Contacted, Waiting and Closed.",
+      "Add only enquiries you have a lawful reason to store and a clear retention period for.",
+      "Test reminders manually before connecting an automation platform.",
+      "If automating, send notifications to the responsible person and keep human control over outreach."
+    ],
+    "safety": "Follow applicable privacy and direct-marketing rules. Do not scrape contact details or send unsolicited bulk messages."
+  },
+  {
+    "id": "developer-helper",
+    "title": "Use an AI coding assistant safely",
+    "category": "Development",
+    "level": "Intermediate",
+    "time": "20–60 min setup",
+    "summary": "Use an assistant to understand a small code change, propose tests and explain a patch before you apply it.",
+    "tools": [
+      "GitHub Copilot",
+      "ChatGPT"
+    ],
+    "tags": [
+      "coding",
+      "testing",
+      "developer"
+    ],
+    "free_route": "Use documentation and free access tiers where available. For a small task, provide a minimal reproducible example rather than an entire private codebase.",
+    "steps": [
+      "Describe one small bug or improvement and the expected behaviour.",
+      "Share only the relevant, non-secret code and ask for an explanation before a proposed change.",
+      "Ask for a minimal patch and tests covering normal and edge cases.",
+      "Review every line, run the tests and inspect dependencies before merging.",
+      "Keep a rollback path and never paste credentials, tokens or private keys into prompts."
+    ],
+    "safety": "AI code can contain bugs or insecure patterns. Review dependencies, licences, secrets and security implications."
+  }
+]
