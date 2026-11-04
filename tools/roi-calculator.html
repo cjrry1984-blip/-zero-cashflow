@@ -55,8 +55,9 @@ fields.forEach(id=>document.getElementById(id).addEventListener('input',calculat
 const examples={followup:[15,20,25,80],report:[90,1,35,60],content:[30,5,30,50]};
 document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{const example=examples[button.dataset.example];fields.forEach((id,i)=>document.getElementById(id).value=example[i]);calculate()}));
 document.getElementById('copy-result').addEventListener('click',async()=>{const text=`My illustrative automation estimate: ${current.hours.toFixed(1)} hours/month, ${money(current.monthly)}/month in labor value (${money(current.annual)}/year). Excludes setup, software and maintenance costs. Time value is not guaranteed cash savings. Calculate yours: https://cjrry1984-blip.github.io/-zero-cashflow/tools/roi-calculator.html`;try{await navigator.clipboard.writeText(text);document.getElementById('copy-status').textContent='Copied.'}catch{const fallback=document.getElementById('share-fallback');fallback.value=text;fallback.hidden=false;fallback.focus();fallback.select();document.getElementById('copy-status').textContent='Select and copy the estimate.'}});
-const source=new URLSearchParams(location.search).get('utm_source');
-document.querySelectorAll('a[data-product]').forEach(a=>{const u=new URL(a.href);u.searchParams.set('utm_source',source&&/^[a-z0-9_-]{1,40}$/i.test(source)?source:'izzopac_free_calculator');u.searchParams.set('utm_medium','free_tool');u.searchParams.set('utm_campaign','toolbox_launch');u.searchParams.set('utm_content',a.dataset.product);a.href=u.href});
+const campaignParams=new URLSearchParams(location.search);
+const campaignToken=(key,fallback)=>{const value=campaignParams.get(key);return value&&/^[a-z0-9_-]{1,60}$/i.test(value)?value:fallback};
+document.querySelectorAll('a[data-product]').forEach(a=>{const u=new URL(a.href);u.searchParams.set('utm_source',campaignToken('utm_source','izzopac_free_calculator'));u.searchParams.set('utm_medium','free_tool');u.searchParams.set('utm_campaign',campaignToken('utm_campaign','toolbox_launch'));u.searchParams.set('utm_content',campaignToken('utm_content','calculator')+'_'+a.dataset.product);a.href=u.href});
 calculate();
 </script>
 </body></html>
