@@ -39,7 +39,17 @@
     script.src = 'https://gc.zgo.at/count.js';
     script.async = true;
     script.referrerPolicy = 'no-referrer';
-    script.onload = pageview;
+    script.onload = () => {
+      // The vendor client otherwise includes location.search automatically.
+      const original = window.goatcounter.get_data;
+      window.goatcounter.get_data = vars => {
+        const data = original(vars);
+        data.q = '';
+        data.s = 0;
+        return data;
+      };
+      pageview();
+    };
     script.onerror = () => { loaded = false; };
     document.head.appendChild(script);
   }
