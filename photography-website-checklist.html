@@ -6,7 +6,7 @@
 <title>Photography Website Checklist: Test Your Booking Flow on Mobile | IZZOPAC</title>
 <meta name="description" content="Five practical checks for photographers. Test your portfolio, gallery speed, enquiry form and confirmation on a phone. Free checklist and website audit.">
 <link rel="canonical" href="https://cjrry1984-blip.github.io/-zero-cashflow/photography-website-checklist.html">
-<style>body{margin:0;background:#f5f8fc;color:#18354e;font:16px/1.65 system-ui,sans-serif}header,main,footer{max-width:840px;margin:auto;padding:25px}header{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #d5e3ee}a{color:#075e8d}h1{font-size:clamp(34px,6vw,54px);line-height:1.1;margin:38px 0 18px}article{padding:20px 25px;background:white;border:1px solid #d5e3ee;border-radius:12px;margin:18px 0}h2{margin-top:0}li{margin:8px 0}.cta{display:inline-block;background:#145c83;color:white;text-decoration:none;padding:13px 19px;border-radius:7px;font-weight:bold}.muted{color:#526b7f;font-size:13px}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:12px;color:#267da7;font-weight:700}footer{border-top:1px solid #d5e3ee;font-size:13px}</style>
+<style>body{margin:0;background:#f5f8fc;color:#18354e;font:16px/1.65 system-ui,sans-serif}header,main,footer{max-width:840px;margin:auto;padding:25px}header{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #d5e3ee}a{color:#075e8d}h1{font-size:clamp(34px,6vw,54px);line-height:1.1;margin:38px 0 18px}article{padding:20px 25px;background:white;border:1px solid #d5e3ee;border-radius:12px;margin:18px 0}h2{margin-top:0}li{margin:8px 0}.cta{display:inline-block;background:#145c83;color:white;text-decoration:none;padding:13px 19px;border-radius:7px;font-weight:bold}.muted{color:#526b7f;font-size:13px}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:12px;color:#267da7;font-weight:700}footer{border-top:1px solid #d5e3ee;font-size:13px}#booking-button-challenge [hidden]{display:none}.challenge-gallery{background:#f3ebe5;border:1px solid #d5e3ee;border-radius:10px;padding:16px;margin-top:16px}.challenge-photos{display:grid;gap:8px;margin:14px 0}.challenge-photos span{min-height:clamp(72px,22vw,126px);border-radius:5px;background:linear-gradient(145deg,#514342,#b58f78 60%,#f6d8ae)}.challenge-photos span:nth-child(2){background:linear-gradient(150deg,#435d54,#8a9979 65%,#e4ddc4)}.challenge-photos span:nth-child(3){background:linear-gradient(160deg,#343c50,#857890 70%,#ebc0ab)}#booking-button-challenge button{cursor:pointer;font:inherit}#booking-button-challenge .cta{border:0;font-weight:700}</style>
 <link rel="alternate" hreflang="en" href="https://cjrry1984-blip.github.io/-zero-cashflow/photography-website-checklist.html">
 <link rel="alternate" hreflang="nl" href="https://cjrry1984-blip.github.io/-zero-cashflow/fotografen-website-checklist.html">
 </head>
@@ -37,6 +37,24 @@
 <h2>5. Change one thing and repeat the test</h2>
 <p>Write down the page, what you observed and one change to try. For example, “Wedding gallery · booking link below 30 photos · add the same link below the gallery introduction.” Repeat the one-minute test on the same phone after publishing.</p>
 </article>
+<article id="booking-button-challenge" hidden>
+<h2>Can you find the booking button?</h2>
+<p>Try two versions of the same fictional wedding gallery. The timer starts when you open each version.</p>
+<button class="cta" id="challenge-start" type="button">Start the challenge</button>
+<section class="challenge-gallery" id="challenge-gallery" hidden aria-labelledby="challenge-round">
+<h3 id="challenge-round" tabindex="-1"></h3>
+<div id="challenge-top"></div>
+<div class="challenge-photos" aria-hidden="true"><span></span><span></span><span></span></div>
+<div id="challenge-bottom"><button class="cta" id="challenge-book" type="button">Check wedding availability</button></div>
+</section>
+<p id="challenge-status" role="status"></p>
+<section id="challenge-finish" hidden>
+<h3 id="challenge-result" tabindex="-1"></h3>
+<p>The second test can also feel faster because you know what to look for. Now try moving one link on your own site and time the same route again.</p>
+<p><a href="#booking-test-example">Get the free action log</a> · <a href="website-auditor.html?utm_source=booking_challenge&amp;utm_medium=website&amp;utm_campaign=website_fix_playbook#website-fix-playbook">See the Website Fix Playbook</a></p>
+<button type="button" id="challenge-share">Copy challenge link</button>
+</section>
+</article>
 <article id="booking-test-example">
 <h2>Worked example: a wedding gallery with a buried booking link</h2>
 <p>This is an illustrative example. Use the same steps to record what happens on your own site.</p>
@@ -56,5 +74,67 @@
 <p>Also available in <a href="photography-checklist-languages.html#fr" lang="fr">français</a>, <a href="photography-checklist-languages.html#de" lang="de">Deutsch</a> and <a href="photography-checklist-languages.html#es" lang="es">español</a>.</p>
 </main>
 <footer>© IZZOPAC SOLUTIONS · <a href="website-fix-checklist.html">General website checklist</a> · <a href="privacy.html">Privacy</a></footer>
+<script>
+(() => {
+  const byId = (id) => document.getElementById('challenge-' + id);
+  const root = document.getElementById('booking-button-challenge');
+  const start = byId('start');
+  const gallery = byId('gallery');
+  const roundTitle = byId('round');
+  const button = byId('book');
+  const status = byId('status');
+  const finish = byId('finish');
+  const result = byId('result');
+  const format = (ms) => (ms / 1000).toFixed(1) + ' s';
+  let round = 0;
+  let startedAt = 0;
+  let firstTime = 0;
+
+  start.addEventListener('click', () => {
+    if (round === 2) round = 0;
+    round += 1;
+    finish.hidden = true;
+    status.textContent = '';
+    start.hidden = true;
+    (round === 1 ? byId('bottom') : byId('top')).append(button);
+    roundTitle.textContent = 'Gallery ' + (round === 1 ? 'A' : 'B') + ' · Wedding photography';
+    gallery.hidden = false;
+    roundTitle.focus();
+    startedAt = performance.now();
+  });
+
+  button.addEventListener('click', () => {
+    const elapsed = performance.now() - startedAt;
+    gallery.hidden = true;
+    start.hidden = false;
+    if (round === 1) {
+      firstTime = elapsed;
+      start.textContent = 'Try gallery B';
+      status.textContent = 'Gallery A took ' + format(firstTime) + '.';
+      start.focus();
+      return;
+    }
+
+    result.textContent = 'Gallery A: ' + format(firstTime) + ' · Gallery B: ' + format(elapsed);
+    start.textContent = 'Play again';
+    finish.hidden = false;
+    result.focus();
+  });
+
+  byId('share').addEventListener('click', async () => {
+    const url = new URL(location.pathname, location.origin);
+    url.searchParams.set('utm_source', 'booking_challenge_share');
+    url.hash = root.id;
+    try {
+      await navigator.clipboard.writeText(url.href);
+      status.textContent = 'Challenge link copied.';
+    } catch {
+      status.textContent = 'Share this address: ' + url.href;
+    }
+  });
+
+  root.hidden = false;
+})();
+</script>
 </body>
 </html>
