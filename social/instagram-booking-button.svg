@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101c44"/><stop offset=".55" stop-color="#253b88"/><stop offset="1" stop-color="#5e3ba0"/></linearGradient><linearGradient id="btn"><stop stop-color="#f86cb0"/><stop offset="1" stop-color="#a76cff"/></linearGradient></defs>
+<rect width="1080" height="1350" fill="url(#bg)"/>
+<circle cx="965" cy="155" r="235" fill="#96a4ff" opacity=".08"/><circle cx="95" cy="1165" r="290" fill="#ff8db7" opacity=".06"/>
+<text x="84" y="90" fill="#f6f7ff" font-family="DejaVu Sans,sans-serif" font-size="37" font-weight="bold" letter-spacing="3">IZZOPAC SOLUTIONS</text>
+<rect x="84" y="130" width="174" height="9" rx="4" fill="#ff7eb9"/>
+<text x="84" y="240" fill="#f6f7ff" font-family="DejaVu Sans,sans-serif" font-size="69" font-weight="bold">Beautiful portfolio.</text>
+<text x="84" y="323" fill="#f6f7ff" font-family="DejaVu Sans,sans-serif" font-size="69" font-weight="bold">Hidden booking button?</text>
+<text x="84" y="389" fill="#d9ddfa" font-family="DejaVu Sans,sans-serif" font-size="32">Try this simple mobile website check.</text>
+<rect x="84" y="444" width="912" height="595" rx="34" fill="#ffffff"/>
+<rect x="126" y="492" width="828" height="112" rx="21" fill="#eff2fa"/>
+<text x="165" y="561" fill="#192a5b" font-family="DejaVu Sans,sans-serif" font-size="40" font-weight="bold">1. Open your best gallery</text>
+<rect x="126" y="626" width="828" height="112" rx="21" fill="#eff2fa"/>
+<text x="165" y="695" fill="#192a5b" font-family="DejaVu Sans,sans-serif" font-size="40" font-weight="bold">2. Find your enquiry button</text>
+<rect x="126" y="760" width="828" height="112" rx="21" fill="#eff2fa"/>
+<text x="165" y="829" fill="#192a5b" font-family="DejaVu Sans,sans-serif" font-size="40" font-weight="bold">3. Send yourself a test</text>
+<rect x="126" y="894" width="828" height="105" rx="21" fill="url(#btn)"/>
+<text x="173" y="960" fill="#ffffff" font-family="DejaVu Sans,sans-serif" font-size="39" font-weight="bold">Can you do it in 60 seconds?</text>
+<text x="84" y="1129" fill="#ffffff" font-family="DejaVu Sans,sans-serif" font-size="42" font-weight="bold">FREE booking-button challenge</text>
+<text x="84" y="1196" fill="#dce1fb" font-family="DejaVu Sans,sans-serif" font-size="29">No signup. Link in caption.</text>
+<text x="84" y="1290" fill="#b9c4e8" font-family="DejaVu Sans,sans-serif" font-size="25">IZZOPAC SOLUTIONS | Practical business tools</text>
+</svg>
