@@ -30,7 +30,7 @@ a{color:var(--mint)}button,select,input{font:inherit}button{cursor:pointer}butto
 <main class="wrap"><section class="hero"><div class="eyebrow">Press. Debate. Laugh. Repeat.</div><h1>THE <span>CHAOS</span><br>BUTTON.</h1><p class="lede">A tiny game for big conversations. Pick a mode, hit the button, and see where the question takes you. No accounts, no pressure, no awkward setup.</p><div class="chips"><span class="chip">6 modes</span><span class="chip">15 free prompts</span><span class="chip">No signup</span><span class="chip">Works on phones</span></div></section>
 <section class="shell" aria-label="Interactive party game">
 <div class="game"><div class="gamebar"><span class="mode" id="modeTitle">Friends</span><span class="count" id="counter" aria-live="polite"></span></div><div class="prompt" id="question" role="status" aria-live="polite">Choose a game mode.</div><div class="turn" id="turn"></div><div class="timer" aria-hidden="true"><div id="clockBar"></div></div><div id="clock" class="clock"></div>
-<div class="actions"><button class="btn primary" id="next" type="button">Next question →</button><button class="btn" id="vote" type="button">+1 point &amp; next</button><button class="btn" id="skip" type="button">Skip</button></div><div class="actions"><button class="btn" id="copyQuestion" type="button">Copy question</button><button class="btn" id="share" type="button">Share free game ↗</button></div><p id="toast" role="status" aria-live="polite"></p></div>
+<div class="actions"><button class="btn primary" id="next" type="button">Next question →</button><button class="btn" id="vote" type="button">+1 point &amp; next</button><button class="btn" id="skip" type="button">Skip</button></div><div class="actions"><button class="btn" id="copyQuestion" type="button">Copy question</button><button class="btn" id="share" type="button">Challenge a friend ↗</button><button class="btn" id="shareGame" type="button">Share game</button></div><p id="toast" role="status" aria-live="polite"></p><p class="muted" style="margin:8px 0 0">Send the current question to someone. Their link opens with exactly this challenge — no account required.</p></div>
 <aside class="aside"><section class="panel"><h2>Pick the vibe</h2><label for="modeSelect">Game mode</label><select id="modeSelect"></select><label for="seconds">Round length</label><select id="seconds"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">60 seconds</option></select><label for="useTimer"><input id="useTimer" type="checkbox" checked style="width:auto"> Countdown enabled</label><button class="btn" id="timerToggle" type="button" style="margin-top:12px;width:100%">Toggle timer</button></section>
 <section class="panel"><h2>Scorekeeper</h2><label for="players">Player names (comma separated)</label><input id="players" value="Player 1, Player 2" maxlength="180"><button class="btn" id="applyPlayers" type="button" style="margin-top:10px;width:100%">Set players</button><div id="scoreboard" class="scoreboard"></div><p class="muted">Tap a score box for +1. Up to 8 players. Scores reset on reload.</p><button class="btn" id="restart" type="button" style="width:100%">New game / reset points</button></section></aside></section>
 <section class="how"><h2>How to play</h2><p>1. Choose a mode and add player names. 2. Press next question. 3. Answer — or pass. 4. Give a point for the funniest or most thoughtful response. Or ignore scores entirely.</p></section>
@@ -47,8 +47,31 @@ function startClock(){stopClock();remaining=Number($('seconds').value);paintCloc
 function paintScore(){const root=$('scoreboard');root.replaceChildren();players.forEach((name,i)=>{const b=document.createElement('button');b.className='score';b.type='button';b.setAttribute('aria-label','Give one point to '+name);const s=document.createElement('span');s.textContent=name;const n=document.createElement('strong');n.textContent=scores[i];b.append(s,n);b.addEventListener('click',()=>{scores[i]++;paintScore()});root.append(b)});$('turn').textContent='Up next: '+players[turn%players.length]}
 function next(){stopClock();if(position>=deck.length){deck=shuffled(DB[mode]);position=0;$('toast').textContent='Deck reshuffled!'}else $('toast').textContent='';$('question').textContent=deck[position++];shown++;$('counter').textContent=shown+' drawn · '+DB[mode].length+' in this deck';paintScore();startClock()}
 function reset(){deck=shuffled(DB[mode]);position=0;shown=0;next()}
-function shareLink(){return FREE_URL+'?utm_source=shared_game&utm_medium=share&utm_campaign=chaos_button'}
-async function share(){const url=shareLink();try{if(navigator.share){await navigator.share({title:'The Chaos Button',text:'Play a free party game.',url});return}if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(url)}else{const field=document.createElement('textarea');field.value=url;document.body.append(field);field.select();document.execCommand('copy');field.remove()}$('toast').textContent='Free game link copied'}catch(e){if(e.name!=='AbortError')$('toast').textContent=url}}
+function shareLink(){
+ const params=new URLSearchParams({challenge:modes.indexOf(mode)+'.'+DB[mode].indexOf($('question').textContent),utm_source:'shared_challenge',utm_medium:'share',utm_campaign:'chaos_button'});
+ return FREE_URL+'?'+params.toString();
+}
+function gameLink(){return FREE_URL+'?utm_source=shared_game&utm_medium=share&utm_campaign=chaos_button'}
+function startChallenge(){
+ const raw=new URLSearchParams(location.search).get('challenge');
+ const match=/^([0-5])\.(\d{1,2})$/.exec(raw||'');
+ if(!match)return false;
+ const chosen=modes[Number(match[1])],index=Number(match[2]);
+ if(!DB[chosen] || !DB[chosen][index])return false;
+ mode=chosen;$('modeSelect').value=chosen;$('modeTitle').textContent=chosen;
+ deck=[DB[chosen][index],...shuffled(DB[chosen].filter((_,i)=>i!==index))];
+ position=0;shown=0;next();
+ $('toast').textContent='A friend challenged you! Answer this question, then send one back.';
+ return true;
+}
+async function share(url,text){
+ try{
+  if(navigator.share){await navigator.share({title:'The Chaos Button',text,url});return}
+  if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text+' '+url);
+  else{const field=document.createElement('textarea');field.value=text+' '+url;document.body.append(field);field.select();document.execCommand('copy');field.remove()}
+  $('toast').textContent='Challenge link copied — send it to a friend!';
+ }catch(e){if(e.name!=='AbortError')$('toast').textContent='Share: '+url}
+}
 modes.forEach(name=>{const o=document.createElement('option');o.value=name;o.textContent=name+' ('+DB[name].length+')';$('modeSelect').append(o)});
 $('modeSelect').addEventListener('change',e=>{mode=e.target.value;$('modeTitle').textContent=mode;reset()});
 $('next').addEventListener('click',()=>{turn=(turn+1)%players.length;next()});
@@ -58,9 +81,10 @@ $('restart').addEventListener('click',()=>{turn=0;scores=players.map(()=>0);rese
 $('applyPlayers').addEventListener('click',()=>{const list=$('players').value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,8);players=list.length?list:['Player 1','Player 2'];scores=players.map(()=>0);turn=0;paintScore();$('toast').textContent='Players updated'});
 $('seconds').addEventListener('change',startClock);
 $('timerToggle').addEventListener('click',()=>{$('useTimer').checked=!$('useTimer').checked;startClock()});
-$('share').addEventListener('click',share);
-$('copyQuestion').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('question').textContent+' — '+FREE_URL);$('toast').textContent='Question copied'}catch{$('toast').textContent='Select the question to copy.'}});
+$('share').addEventListener('click',()=>share(shareLink(),'Can you answer this? '+$('question').textContent));
+$('shareGame').addEventListener('click',()=>share(gameLink(),'Try this free party game.'));
+$('copyQuestion').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('question').textContent+' — '+shareLink());$('toast').textContent='Question and challenge link copied'}catch{$('toast').textContent='Select the question to copy.'}});
 document.addEventListener('keydown',e=>{if(e.target.closest('input,select,textarea,button'))return;if(e.key==='ArrowRight')$('next').click()});
-reset();
+if(!startChallenge())reset();
 })();
 </script></body></html>
