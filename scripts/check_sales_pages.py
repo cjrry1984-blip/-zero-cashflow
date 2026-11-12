@@ -46,3 +46,18 @@ for key in required.values():
     elif url not in (None,""):
         raise SystemExit(f"Unverified checkout link must remain empty for {key}")
 print("Sales pages checked: 2 product funnels, 8 search landings, sitemap, guarded checkout.")
+
+# Photographer-to-checkout campaign routing (no visitor profiling).
+photo=(root/"photography-website-checklist.html").read_text(encoding="utf-8")
+audit=(root/"website-auditor.html").read_text(encoding="utf-8")
+checkout_js=(root/"assets/activate-checkout.js").read_text(encoding="utf-8")
+campaign="photographer_booking_flow"
+if campaign not in photo or campaign not in audit or campaign not in checkout_js:
+    raise SystemExit("Photographer route lost its campaign tagging")
+if 'utm_campaign=photographer_booking_flow' not in photo:
+    raise SystemExit("Missing tagged photographer action link")
+if 'taggedCheckout(next)' not in checkout_js or 'taggedCheckout(fallback)' not in checkout_js:
+    raise SystemExit("Checkout no longer preserves campaign on config/fallback paths")
+if 'photography-website-checklist.html' not in index:
+    raise SystemExit("Homepage no longer links photographer route")
+print("Photographer funnel tagged: homepage -> checklist -> auditor -> Payhip, with fallback.")
