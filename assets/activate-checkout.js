@@ -4,6 +4,20 @@
  */
 (() => {
   'use strict';
+  // Campaign labels only: no visitor identifiers, cookies, fingerprinting or tracking calls.
+  function taggedCheckout(url) {
+    const valid = validUrl(url);
+    if (!valid) return null;
+    const target = new URL(valid);
+    const incoming = new URLSearchParams(location.search);
+    const fromPhotographers =
+      incoming.get('utm_campaign') === 'photographer_booking_flow';
+    target.searchParams.set('utm_source', 'izzopac_auditor');
+    target.searchParams.set('utm_medium', 'website');
+    target.searchParams.set('utm_campaign', fromPhotographers ?
+      'photographer_booking_flow' : 'free_website_audit');
+    return target.href;
+  }
   const validUrl = value => {
     try {
       const url = new URL(value);
@@ -31,7 +45,7 @@
         const next = entry?.status === 'verified' ? validUrl(entry.url) : null;
         const current = validUrl(link.getAttribute('href'));
         if (next) {
-          link.href = next;
+          link.href = taggedCheckout(next);
           link.hidden = false;
           link.target = '_blank';
           link.rel = 'noopener noreferrer';
@@ -50,6 +64,7 @@
         const fallback = validUrl(link.getAttribute('href'));
         link.hidden = !fallback;
         if (fallback) {
+          link.href = taggedCheckout(fallback);
           link.target = '_blank';
           link.rel = 'noopener noreferrer';
         } else setNotice(key, 'Checkout is temporarily unavailable. Please contact support.');
