@@ -15,4 +15,5 @@ jobs:
           python-version: "3.x"
       - run: python scripts/validate_data.py
       - run: python scripts/check_sales_pages.py
+      - run: node scripts/test_checkout_route.mjs
       - run: python scripts/generate_weekly.py
