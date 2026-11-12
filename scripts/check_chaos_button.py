@@ -19,5 +19,5 @@ for mode in ["Friends","Couples","Family","Party","Deep Talk","Chaos"]:
     assert '"'+mode+'":[' in game, f"Missing {mode} deck"
 assert "navigator.share" in game and "navigator.clipboard" in game, "Sharing support missing"
 assert "new URLSearchParams" not in game or "utm_campaign" in game
-assert "premium edition has 252" in home.lower()
+assert "premium offline edition has 252" in home.lower()
 print("Chaos Button static checks passed: homepage, sitemap, 6 modes, controls and honest checkout.")
