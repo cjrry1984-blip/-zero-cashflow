@@ -1,10 +1,26 @@
 {
   "quickcards": {
     "url": "https://payhip.com/b/4YRqo",
-    "status": "pending"
+    "status": "verified",
+    "verification": {
+      "method": "100_percent_coupon",
+      "verified_on": "2026-11-13",
+      "order_id": "dWQRdRMmzj",
+      "email_received": true,
+      "download_integrity_checked": true,
+      "paid_payment_tested": false
+    }
   },
   "website_playbook": {
     "url": "https://payhip.com/b/xCQTj",
-    "status": "pending"
+    "status": "verified",
+    "verification": {
+      "method": "100_percent_coupon",
+      "verified_on": "2026-11-13",
+      "order_id": "2GZ9yDE3Bp",
+      "email_received": true,
+      "download_integrity_checked": true,
+      "paid_payment_tested": false
+    }
   }
 }
