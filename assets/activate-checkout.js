@@ -5,7 +5,7 @@
 (() => {
   'use strict';
   // Campaign labels only: no visitor identifiers, cookies, fingerprinting or tracking calls.
-  function taggedCheckout(url) {
+  function taggedCheckout(url, key) {
     const valid = validUrl(url);
     if (!valid) return null;
     const target = new URL(valid);
@@ -13,11 +13,11 @@
     const fromPhotographers =
       incoming.get('utm_campaign') === 'photographer_booking_flow';
     const safeLabel = value => /^[a-zA-Z0-9_-]{1,80}$/.test(value || '') ? value : null;
-    const defaultSource = location.pathname.endsWith('quickcards.html') ? 'izzopac_quickcards' : 'izzopac_auditor';
+    const defaultSource = key === 'quickcards' ? 'izzopac_quickcards' : key === 'chaos_premium' ? 'izzopac_chaos' : 'izzopac_auditor';
     target.searchParams.set('utm_source', safeLabel(incoming.get('utm_source')) || defaultSource);
     target.searchParams.set('utm_medium', safeLabel(incoming.get('utm_medium')) || 'website');
     target.searchParams.set('utm_campaign', safeLabel(incoming.get('utm_campaign')) || (fromPhotographers ?
-      'photographer_booking_flow' : (defaultSource === 'izzopac_quickcards' ? 'quickcards' : 'free_website_audit')));
+      'photographer_booking_flow' : (key === 'quickcards' ? 'quickcards' : key === 'chaos_premium' ? 'chaos_premium' : 'free_website_audit')));
     const variant = safeLabel(incoming.get('utm_content'));
     if (variant) target.searchParams.set('utm_content', variant);
     return target.href;
@@ -50,7 +50,7 @@
         const next = entry?.status === 'verified' ? validUrl(entry.url) : null;
         const current = validUrl(link.getAttribute('href'));
         if (next) {
-          link.href = taggedCheckout(next);
+          link.href = taggedCheckout(next, key);
           link.hidden = false;
           link.target = '_blank';
           link.rel = 'noopener noreferrer';
