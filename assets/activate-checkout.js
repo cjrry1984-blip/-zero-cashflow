@@ -12,10 +12,14 @@
     const incoming = new URLSearchParams(location.search);
     const fromPhotographers =
       incoming.get('utm_campaign') === 'photographer_booking_flow';
-    target.searchParams.set('utm_source', 'izzopac_auditor');
-    target.searchParams.set('utm_medium', 'website');
-    target.searchParams.set('utm_campaign', fromPhotographers ?
-      'photographer_booking_flow' : 'free_website_audit');
+    const safeLabel = value => /^[a-zA-Z0-9_-]{1,80}$/.test(value || '') ? value : null;
+    const defaultSource = location.pathname.endsWith('quickcards.html') ? 'izzopac_quickcards' : 'izzopac_auditor';
+    target.searchParams.set('utm_source', safeLabel(incoming.get('utm_source')) || defaultSource);
+    target.searchParams.set('utm_medium', safeLabel(incoming.get('utm_medium')) || 'website');
+    target.searchParams.set('utm_campaign', safeLabel(incoming.get('utm_campaign')) || (fromPhotographers ?
+      'photographer_booking_flow' : (defaultSource === 'izzopac_quickcards' ? 'quickcards' : 'free_website_audit')));
+    const variant = safeLabel(incoming.get('utm_content'));
+    if (variant) target.searchParams.set('utm_content', variant);
     return target.href;
   }
   const validUrl = value => {
