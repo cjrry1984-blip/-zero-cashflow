@@ -33,8 +33,9 @@
       const node = document.querySelector('[data-pending-checkout="' + key + '"]');
       if (node) { node.textContent = message; node.hidden = false; }
     };
-    // HTML already contains a validated Payhip fallback for active products.
-    // Config fetch refreshes the destination; network failure never hides that link.
+    // Only a verified configuration may expose a purchase link.
+    // Keep pending products unavailable while loading and on network errors.
+    for (const link of links) link.hidden = true;
     try {
       const response = await fetch('data/checkout-links.json', {cache: 'no-store'});
       if (!response.ok) throw new Error('Checkout configuration unavailable');
@@ -61,13 +62,8 @@
     } catch {
       for (const link of links) {
         const key = link.dataset.productCheckout;
-        const fallback = validUrl(link.getAttribute('href'));
-        link.hidden = !fallback;
-        if (fallback) {
-          link.href = taggedCheckout(fallback);
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-        } else setNotice(key, 'Checkout is temporarily unavailable. Please contact support.');
+        link.hidden = true;
+        setNotice(key, 'Checkout is temporarily unavailable. Please contact support.');
       }
     }
   }
