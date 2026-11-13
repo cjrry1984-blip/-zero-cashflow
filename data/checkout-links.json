@@ -22,5 +22,17 @@
       "download_integrity_checked": true,
       "paid_payment_tested": false
     }
+  },
+  "chaos_premium": {
+    "url": "https://payhip.com/b/kh8iA",
+    "status": "verified",
+    "verification": {
+      "method": "100_percent_coupon",
+      "verified_on": "2026-11-13",
+      "order_id": "XB0JgDLDWL",
+      "email_received": true,
+      "download_integrity_checked": true,
+      "paid_payment_tested": false
+    }
   }
 }
