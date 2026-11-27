@@ -13,11 +13,11 @@
     const fromPhotographers =
       incoming.get('utm_campaign') === 'photographer_booking_flow';
     const safeLabel = value => /^[a-zA-Z0-9_-]{1,80}$/.test(value || '') ? value : null;
-    const defaultSource = key === 'quickcards' ? 'izzopac_quickcards' : key === 'chaos_premium' ? 'izzopac_chaos' : 'izzopac_auditor';
+    const defaultSource = key === 'followup_kit' ? 'izzopac_followup' : key === 'quickcards' ? 'izzopac_quickcards' : key === 'chaos_premium' ? 'izzopac_chaos' : 'izzopac_auditor';
     target.searchParams.set('utm_source', safeLabel(incoming.get('utm_source')) || defaultSource);
     target.searchParams.set('utm_medium', safeLabel(incoming.get('utm_medium')) || 'website');
     target.searchParams.set('utm_campaign', safeLabel(incoming.get('utm_campaign')) || (fromPhotographers ?
-      'photographer_booking_flow' : (key === 'quickcards' ? 'quickcards' : key === 'chaos_premium' ? 'chaos_premium' : 'free_website_audit')));
+      'photographer_booking_flow' : (key === 'quickcards' ? 'quickcards' : key === 'chaos_premium' ? 'chaos_premium' : key === 'followup_kit' ? 'followup_kit' : 'free_website_audit')));
     const variant = safeLabel(incoming.get('utm_content'));
     if (variant) target.searchParams.set('utm_content', variant);
     return target.href;
@@ -31,6 +31,11 @@
     } catch { return null; }
   };
   async function activate() {
+    const followUp = document.querySelector('[data-follow-up-checkout]');
+    if (followUp) {
+      const destination = taggedCheckout(followUp.getAttribute('href'), 'followup_kit');
+      if (destination) followUp.href = destination;
+    }
     const links = [...document.querySelectorAll('[data-product-checkout]')];
     if (!links.length) return;
     const setNotice = (key, message) => {
