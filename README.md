@@ -49,20 +49,28 @@ Run `python scripts/validate_data.py` to validate both the tool directory and re
 
 The static storefront already links to https://payhip.com/b/Q6StN. A deployed Worker/D1 backend provides sale/refund registration, protected follow-up drafts and private daily reports in Cloudflare D1. Public GitHub report publication has been removed. See [activation steps and verification limits](automation/README.md). The live database health check and scheduled report handler have been verified; real Payhip sale delivery and the first automatic timer execution remain unverified. No buyer data or secrets belong in this repository.
 
-## QuickCards + Website Fix Playbook — sales launch status
+## Storefront checkout status
 
-**Public pages:** [QuickCards](quickcards.html) and [Website Auditor](website-auditor.html); eight additional free message pages support the QuickCards funnel. The full ZIP downloads, covers, free preview PDFs and Payhip listing copy are separate **private upload assets**, not tracked in this public repository.
+The [QuickCards](quickcards.html), [Website Auditor](website-auditor.html) and [Chaos Button](chaos-button.html) pages have active Payhip purchase routes for the products listed below. QuickCards also has eight free message pages. Paid ZIP files and private upload assets are stored outside this repository.
 
-**Checkout is intentionally OFF until real verification.** The two new Payhip links are not created/verified in this repo. They must not be confused with the existing Follow-Up Kit link (https://payhip.com/b/Q6StN).
+| Product | Storefront price before applicable taxes | Download |
+| --- | --- | --- |
+| QuickCards | €1.99 | Offline card designer, 24 printable cards (12 A4 pages) and 40 example messages |
+| Website Fix Playbook | €9 | Nine-page DIY website workbook |
+| Chaos Button Premium | €3.49 | Offline party game with 252 questions across six modes |
 
-The public file [data/checkout-links.json](data/checkout-links.json) holds the checkout state for two new products:
+[Checkout configuration](data/checkout-links.json) records successful 100% coupon orders on 13 November 2026 for all three products, including delivery email and download integrity checks. The configuration records paid-payment testing as outstanding.
 
-- `quickcards`: ZIP with offline HTML card designer, 24 printable cards (12 A4 pages), 40 example messages. Proposed launch price €1.99.
-- `website_playbook`: nine-page DIY website workbook. Proposed launch price €9.
+On these product pages, [the checkout script](assets/activate-checkout.js) reveals each initially hidden button only after it loads a verified entry with a valid HTTPS Payhip product URL. Pending products use an empty URL. A missing, invalid or unavailable configuration keeps the button hidden and shows an availability notice.
 
-After creating both products in Payhip, uploading their **correct protected ZIP files**, adding cover images and sample PDFs, confirming EU/UK VAT settings, publishing mandatory seller/contact/withdrawal disclosures, and testing 100%-coupon delivery **and** a real payment, set the correct `https://payhip.com/b/...` URL and status `verified` for each product. Otherwise leave the corresponding URL empty and status `pending`. The script [assets/activate-checkout.js](assets/activate-checkout.js) shows a buy button only for verified URLs. Unverified products remain clearly labelled as not yet on sale.
+For a new or changed route, confirm the protected ZIP, seller disclosures and VAT settings before release. Record coupon delivery and paid-payment verification separately. See Payhip's guides on [digital products](https://help.payhip.com/article/59-adding-a-digital-product) and [digital EU VAT](https://help.payhip.com/article/127-digital-eu-vat), and the Belgian guidance on [distance-selling information](https://economie.fgov.be/nl/themas/verkoop/vormen-van-verkoop/verkoop-op-afstand/verkoop-op-afstand-informatie).
 
-Payhip's digital download and VAT guidance: https://help.payhip.com/article/59-adding-a-digital-product and https://help.payhip.com/article/127-digital-eu-vat . Belgian trader-information obligations should be reviewed against https://economie.fgov.be/nl/themas/verkoop/vormen-van-verkoop/verkoop-op-afstand/verkoop-op-afstand-informatie .
+Run the same local checks as [the storefront CI workflow](.github/workflows/ci.yml).
 
-**Quality gate:** `python scripts/check_sales_pages.py` verifies checkout gating, pages and sitemap. The GitHub CI workflow runs it on every push. Local browser acceptance of the offline card studio and simulated PageSpeed API: 13/13 passing as of Nov 6, 2026. A simulated API result does not prove Google's live API or the Payhip buyer experience works.
-
+```bash
+python scripts/validate_data.py
+python scripts/check_sales_pages.py
+python scripts/check_chaos_button.py
+node scripts/test_checkout_route.mjs
+python scripts/generate_weekly.py
+```
